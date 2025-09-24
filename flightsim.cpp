@@ -1,37 +1,55 @@
 #include <iostream>
 #include <vector>
+#include <string>
+#include <cstdlib> // srand libarry
+#include "constants.h"
+#include ""
 
-// Simulation Parameters 
-const double TIME_STEP = 0.01;                  // sec (Refresh Rate)
-const double SIMULATION_DURATION = 300.0;       // sec (Total time to simulate)
+class Sensors {
 
-// Physical & Environmental Constants
-const double GRAVITY = -9.81;                   // m/s^2
-const double AIR_DENSITY = 1.225;               // kg/m^3 (at sea level)
+};
 
-// Rocket Physical Parameters
-const double ROCKET_MASS_FULL = 5.0;            // kg (Mass with engine)
-const double ROCKET_MASS_EMPTY = 4.5;           // kg (Mass after fuel is spent)
-const double ENGINE_THRUST = 300.0;             // N (Force engine produces)
-const double ENGINE_BURN_TIME = 3.0;            // sec 
-const double DRAG_COEFFICIENT_ROCKET = 0.75;    // (How aerodynamic the rocket body is)
-const double DRAG_COEFFICIENT_PARACHUTE = 7.5;  // (How much drag the parachute creates)
-const double CROSS_SECTIONAL_AREA = 0.008;      // m^2 (The area of the rocket pushing against the air)
+class FlightComputer {
+
+};
+
+
+
 
 // Physics Engine
 int main() {
+    srand(time(0));
+
     // State Variables
-    double altitude = 0.0;
-    double velocity = 0.0;
+    double trueAltitude = 0.0;
+    double trueVelocity = 0.0;
     double acceleration = 0.0;
-    double flightTime = 0.0;
+
+    // Flight Computer (estimates)
+    double estimatedAltitude = 0.0;
+    double estimatedVelocity = 0.0;
+    double previousEstimatedVelocity;
+    double barometerAltitude = 0.0;
 
     // Current variable that change during flight
+    double flightTime = 0.0;
     double currentMass = ROCKET_MASS_FULL;
     double currenDragCoefficient = DRAG_COEFFICIENT_ROCKET;
+    bool parachuteDeployed = false;
 
     // Main Simulation Loop
     while (flightTime <= SIMULATION_DURATION){
+        // Detect Apogee (Highest point)
+        if (!parachuteDeployed && previousEstimatedVelocity > 0 && estimatedVelocity < 0) {
+            printf("Parachute Deployed\n");
+            parachuteDeployed = true;
+        }
+
+        // After apogee is detected, the parachute deploys
+        if (parachuteDeployed) {
+            currenDragCoefficient = DRAG_COEFFICIENT_PARACHUTE;
+        }
+
         // Update rocket state based on flight time
         if (flightTime >= ENGINE_BURN_TIME) {
             currentMass = ROCKET_MASS_EMPTY;
@@ -46,12 +64,13 @@ int main() {
         }
 
         // Calculate the drag force magnitude and direciton
-        double dragMagnitude = (0.5 * AIR_DENSITY * (velocity * velocity) * currenDragCoefficient * CROSS_SECTIONAL_AREA);
+        double dragMagnitude = (0.5 * AIR_DENSITY * (trueVelocity * trueVelocity) * currenDragCoefficient * CROSS_SECTIONAL_AREA);
+        
         double fDrag = 0.0;
-        if (velocity > 0) {
+        if (trueVelocity > 0) {
             fDrag = -dragMagnitude; // Oppose upward motion
         } else {
-            fDrag = dragMagnitude // Oppose downward motion
+            fDrag = dragMagnitude; // Oppose downward motion
         }
 
         // Determine Net Force and Acceleration
@@ -59,21 +78,38 @@ int main() {
         acceleration = netForce / currentMass;
 
         // Find New State Using Euler Method
-        velocity = velocity + (acceleration * TIME_STEP);
-        altitude = altitude + (velocity * TIME_STEP);
+        trueVelocity = trueVelocity + (acceleration * TIME_STEP);
+        trueAltitude = trueAltitude + (trueVelocity * TIME_STEP);
+
+        // Update previous velocity
+        previousEstimatedVelocity = estimatedVelocity;
+
+        estimatedVelocity = estimatedVelocity + (noisyAcceleration * TIME_STEP);
+        estimatedAltitude = estimatedAltitude + (estimatedVelocity * TIME_STEP);
+
+        // Generate a noisy reading for accelerometer based on truth
+        double accelerometrNoise = ((static_cast<double>(rand() / RAND_MAX)) * 0.4) - 0.2; // Range (-0.2 to 0.2) m/s^2
+        double noisyAcceleration = acceleration + accelerometrNoise;
+
+        if (static_cast<int>(flightTime / TIME_STEP) % 10 == 0) {
+            // Generate a noisy reading for Barometer
+            double barometerNoise = ((static_cast<double>(rand()) / RAND_MAX) * 10.0) - 5.0; // Range (-5.0 to 5.0) meters
+            barometerAltitude = trueAltitude + barometerNoise;
+        }
 
         // Stop simulation if rocket has landed
-        if (altitude < 0.0 & flightTime > ENGINE_BURN_TIME) {
-            altitude = 0.0; // Set to ground level
-            velocity = 0.0;
-            acceleration = 0.0;
+        if (trueAltitude < 0.0 && flightTime > ENGINE_BURN_TIME) {
             printf("Time: %.2f s | LANDED\n", flightTime);
             break; // Exit loop
         }
+        
+        // Implementing the Kalman filter
+        double error = barometerAltitude - estimatedAltitude; // Calculate error (difference)
+        estimatedAltitude = estimatedAltitude + (error * 0.1); // Update estimate by adding a small fraction of error
 
         // Print current state every 10 steps
         if (static_cast<int>(flightTime / TIME_STEP) % 10 == 0) {
-            printf("Time: %.2f s | Alt: %.2f m | vel: %.2f m/s | Accel: %.2f m/s^2\n", flightTime, altitude, velocity, acceleration);
+            printf("Time: %.2f s | True Alt: %.2f m | Est Alt: %.2f m | True Vel: %.2f m/s | Est Vel: %.2f m/s\n", flightTime, trueAltitude, estimatedAltitude, trueVelocity, estimatedVelocity);
         }
 
         // Update Time
