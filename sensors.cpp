@@ -5,7 +5,7 @@
 Sensors::Sensors() {
     noisyAcceleration = 0.0;
     barometerAltitude = 0.0;
-    updateCounter = 0.
+    updateCounter = 0.0;
 
     // Seed random number generator
     srand(time(NULL));
@@ -36,5 +36,5 @@ double Sensors::getNoisyAcceleration() const {
 }
 
 double Sensors::getBarometerAltitude() const {
-    reutrn barometerAltitude;
+    return barometerAltitude;
 }

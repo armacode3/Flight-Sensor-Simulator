@@ -1,6 +1,7 @@
 #pragma once
 #include "constants.h" // Constants file
 
+// "Body"
 class PhysicsEngine {
 private:
     double trueAltitude;
@@ -21,5 +22,3 @@ public:
     double getTrueVelocity() const;
     double getAcceleration() const;
 };
-
-#endif 

@@ -27,10 +27,10 @@ bool FlightComputer::shouldDeployParachute() const {
     return previousEstimatedVelocity > 0 && estimatedVelocity <= 0;
 }
 
-double FlightComputer::getEstimatedAltitude() {
+double FlightComputer::getEstimatedAltitude() const {
     return estimatedAltitude;
 }
 
-double FlightComputer::getEstimatedVelocity() {
+double FlightComputer::getEstimatedVelocity() const {
     return estimatedVelocity;
 }

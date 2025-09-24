@@ -1,6 +1,7 @@
 #pragma once
 #include "constants.h"
 
+// "Brain"
 class FlightComputer {
 private:
     double estimatedAltitude;
