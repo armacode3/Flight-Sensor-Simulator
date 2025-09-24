@@ -20,10 +20,10 @@ int main() {
         engine.updateState(flightTime, parachuteDeployed);
 
         // Update sensors based on new calculations
-        sensors.update(engine.getAcceleration(), engine.getTrueAltitude());
+        sensors.update(engine.getAcceleration(), engine.getTrueAltitude(), engine.getTrueLatitude(), engine.getTrueLongitude());
 
         // Update flight computer with noisy sensor data
-        computer.updateState(sensors.getNoisyAcceleration(), sensors.getBarometerAltitude(), sensors.isBarometerReady());
+        computer.updateState(sensors.getNoisyAcceleration(), sensors.getBarometerAltitude(), sensors.isBarometerReady(), sensors.getNoisyAngularVelocity(), sensors.getNoisyLatitude(), sensors.getNoisyLongitude(), sensors.isGpsReady());
 
         // Flight computer makes decision
         if (!parachuteDeployed && computer.shouldDeployParachute()) {
@@ -36,8 +36,8 @@ int main() {
 
         // print data
         if (static_cast<int>(flightTime / TIME_STEP) % 10 == 0) {
-            printf("Time: %.2f s | True Alt: %.2f m | Est Alt: %.2f m | True Vel: %.2f m/s | Est Vel: %.2f m/s\n",
-                   flightTime, engine.getTrueAltitude(), computer.getEstimatedAltitude(), engine.getTrueVelocity(), computer.getEstimatedVelocity());
+            printf("Time: %.2f s | True Alt: %.2f m | Est Alt: %.2f m | True Vel: %.2f m/s | Est Vel: %.2f m/s | Angle: %.2f\n",
+                   flightTime, engine.getTrueAltitude(), computer.getEstimatedAltitude(), engine.getTrueVelocity(), computer.getEstimatedVelocity(), computer.getEstimatedAngle());
         }
 
         // Update Time

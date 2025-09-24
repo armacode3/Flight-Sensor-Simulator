@@ -9,6 +9,9 @@ private:
     double acceleration;
     double currentMass;
     double currentDragCoefficent;
+    double trueAngle;
+    double trueLatitude;
+    double trueLongitude;
 
 public:
     // Constructor to initialize object
@@ -21,4 +24,7 @@ public:
     double getTrueAltitude() const;
     double getTrueVelocity() const;
     double getAcceleration() const;
+    double getTrueAngle() const;
+    double getTrueLatitude() const;
+    double getTrueLongitude() const;
 };

@@ -1,10 +1,16 @@
 #include "physics_engine.h"
+#include <cmath>
 
 // Constructor
 PhysicsEngine::PhysicsEngine() {
     trueAltitude = 0.0;
     trueVelocity = 0.0;
     acceleration = 0.0;
+    trueAngle = 0.0;
+
+    // Launch Complex 39A, Kennedy Space Center, FL
+    trueLatitude = 28.608389;
+    trueLongitude = -80.604333;
     currentMass = ROCKET_MASS_FULL;
     currentDragCoefficent = DRAG_COEFFICIENT_ROCKET;
 }
@@ -22,7 +28,12 @@ void PhysicsEngine::updateState(double flightTime, bool parachuteDeployed) {
     // Calculate forces
     double fGravity = -currentMass * GRAVITY;
     double fThrust = (flightTime < ENGINE_BURN_TIME) ? ENGINE_THRUST : 0.0;
-    double dragMagnitude = 0.5 * AIR_DENSITY * (trueVelocity * trueVelocity) * currentDragCoefficent * CROSS_SECTIONAL_AREA;
+    
+    // Calculate current air density for rockets true altitude
+    double currentAirDensity = SEA_LEVEL_AIR_DENSITY * exp(-trueAltitude / 8500.0);
+    
+    // Use new density in drag calculation
+    double dragMagnitude = 0.5 * currentAirDensity * (trueVelocity * trueVelocity) * currentDragCoefficent * CROSS_SECTIONAL_AREA;
     double fDrag = (trueVelocity > 0) ? -dragMagnitude : dragMagnitude;
 
     // Calculate net force and update acceleration
@@ -45,4 +56,16 @@ double PhysicsEngine::getTrueVelocity() const {
 
 double PhysicsEngine::getAcceleration() const {
     return acceleration;
+}
+
+double PhysicsEngine::getTrueAngle() const {
+    return trueAngle;
+}
+
+double PhysicsEngine::getTrueLatitude() const {
+    return trueLatitude;
+}
+
+double PhysicsEngine::getTrueLongitude() const {
+    return trueLongitude;
 }
