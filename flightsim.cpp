@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstdio>
+#include <fstream>
 #include "constants.h"
 #include "flight_computer.h"
 #include "physics_engine.h"
@@ -13,6 +14,15 @@ int main() {
 
     double flightTime = 0.0;
     bool parachuteDeployed = false;
+
+    std::ofstream dataFile("output.csv");
+
+    if (!dataFile.is_open()) {
+        std::cerr << "ERROR: Unable to open file for writing.\n";
+        return 1;
+    }
+
+    dataFile << "Time,TrueAlt,EstAlt,TrueVel,EstVel,EstAngle,TrueLat,TrueLon,EstLat,EstLon\n";
 
     // Main loop
     while (engine.getTrueAltitude() >= 0.0 || flightTime < 1.0) {
@@ -43,6 +53,18 @@ int main() {
         // Update Time
         flightTime += TIME_STEP;
 
+        dataFile << 
+            flightTime << "," << 
+            engine.getTrueAltitude() << "," << 
+            computer.getEstimatedAltitude() << "," << 
+            engine.getTrueVelocity() << "," << 
+            computer.getEstimatedVelocity() << "," <<
+            computer.getEstimatedAngle() << "," <<
+            engine.getTrueLatitude() << "," <<
+            engine.getTrueLongitude() << "," <<
+            computer.getEstimatedLatitude() << "," <<
+            computer.getEstimatedLongitude() << "\n";
+
         // Safety break
         if (flightTime > SIMULATION_DURATION) {
             std::cout << "Simulation timed out." << std::endl;
@@ -51,6 +73,8 @@ int main() {
     }
 
     printf("Landed at %.2f s. Final Altitude: %.2f m\n", flightTime, engine.getTrueAltitude());
+
+    dataFile.close();
 
     return 0;
 }
