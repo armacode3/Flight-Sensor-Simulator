@@ -1,5 +1,6 @@
 import socket
 import sys
+import pyqtgraph as pg
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout
 from PyQt5.QtCore import QObject, QThread, pyqtSignal
 
@@ -51,22 +52,45 @@ if __name__ == "__main__":
     # Create layout
     layout = QVBoxLayout()
     # Create the labels
-    timeLabel = QLabel("Time: --")
-    altitudeLabel = QLabel("Altitude: --")
-    estAltLabel = QLabel("Est. Altitude: --")
+    time_label = QLabel("Time: --")
+    altitude_label = QLabel("Altitude: --")
+    est_alt_label = QLabel("Est. Altitude: --")
 
     # Add each label to layout
-    layout.addWidget(timeLabel) 
-    layout.addWidget(altitudeLabel)
-    layout.addWidget(estAltLabel)
+    layout.addWidget(time_label) 
+    layout.addWidget(altitude_label)
+    layout.addWidget(est_alt_label)
+
+    # Create plot widget for graph
+    plot_widget = pg.PlotWidget()
+    plot_widget.setBackground('w') # background white
+    plot_widget.setTitle("Rocket Trajectory", color="b", size="20pt")
+    plot_widget.setLabel('left', 'Altitude (m)', color='red', size='15pt')
+    plot_widget.setLabel('bottom', 'Time (s)', color='red', size='15pt')
+    plot_widget.showGrid(x=True, y=True)
+
+    # The line that will update on graph
+    trajectory_line = plot_widget.plot(pen=pg.mkPen('b', width=3))
+
+    layout.addWidget(plot_widget) # Add plot to layout
 
     # Apply layout to window
     window.setLayout(layout)
 
-    def update_telemetry(time, alt, est_alt, time_label, altitude_label, est_label):
+    # Lists that will store the data for plotting
+    time_data = []
+    altitude_data = []
+
+
+    def update_telemetry(time, alt, est_alt, time_label, altitude_label, est_alt_label):
         time_label.setText(f"Time: {time:.2f} s")
         altitude_label.setText(f"Altitude: {alt:.2f} m")
-        est_label.setText(f"Est. Altitude: {est_alt:.2f} m")
+        est_alt_label.setText(f"Est. Altitude: {est_alt:.2f} m")
+
+        # Update graph data
+        time_data.append(time)
+        altitude_data.append(alt)
+        trajectory_line.setData(time_data, altitude_data)
 
     # Create new thread
     thread = QThread()
@@ -78,7 +102,7 @@ if __name__ == "__main__":
     # Start workers run() method when the thread starts
     thread.started.connect(worker.run)
     #Conncect worker's signal to slot function
-    worker.telemetry_update.connect(lambda t, a, e: update_telemetry(t, a, e, timeLabel, altitudeLabel, estAltLabel))
+    worker.telemetry_update.connect(lambda t, a, e: update_telemetry(t, a, e, time_label, altitude_label, est_alt_label))
     # Start the thread
     thread.start()
 
@@ -86,3 +110,5 @@ if __name__ == "__main__":
     window.show()
     # Start even loop
     sys.exit(app.exec())
+
+# 

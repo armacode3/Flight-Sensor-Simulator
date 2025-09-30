@@ -2,6 +2,8 @@
 #include <cstdio>
 #include <fstream>
 #include <string>
+#include <chrono>
+#include <thread>
 #include <boost/asio.hpp>
 #include "constants.h"
 #include "flight_computer.h"
@@ -85,6 +87,8 @@ int main() {
 
             // Send message to remote endpoint made before
             socket.send_to(boost::asio::buffer(message), remoteEndpoint);
+
+            std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Slows down the program
 
             // Safety break
             if (flightTime > SIMULATION_DURATION) {
