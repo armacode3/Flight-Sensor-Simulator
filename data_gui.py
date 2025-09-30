@@ -111,4 +111,6 @@ if __name__ == "__main__":
     # Start even loop
     sys.exit(app.exec())
 
-# 
+# Find Process ID
+# lsof -i :9000 
+# kill -9 #ID
