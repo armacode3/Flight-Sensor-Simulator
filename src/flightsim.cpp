@@ -83,7 +83,16 @@ int main() {
                 computer.getEstimatedLongitude() << "\n";
 
             // Make message to send through socket
-            std::string message = std::to_string(flightTime) + "," + std::to_string(engine.getTrueAltitude()) + "," + std::to_string(computer.getEstimatedAltitude());
+            std::string message = std::to_string(flightTime) + "," + 
+                                  std::to_string(engine.getTrueAltitude()) + "," + 
+                                  std::to_string(computer.getEstimatedAltitude()) + "," + 
+                                  std::to_string(engine.getTrueVelocity()) + "," +
+                                  std::to_string(computer.getEstimatedVelocity()) + "," +
+                                  std::to_string(computer.getEstimatedAngle()) + "," +
+                                  std::to_string(engine.getTrueLatitude()) + "," +
+                                  std::to_string(engine.getTrueLongitude()) + "," +
+                                  std::to_string(computer.getEstimatedLatitude()) + "," +
+                                  std::to_string(computer.getEstimatedLongitude());
 
             // Send message to remote endpoint made before
             socket.send_to(boost::asio::buffer(message), remoteEndpoint);

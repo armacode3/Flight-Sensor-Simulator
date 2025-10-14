@@ -6,7 +6,7 @@ from PyQt5.QtCore import QObject, QThread, pyqtSignal
 
 class Worker(QObject):
     # Wait for signal
-    telemetry_update = pyqtSignal(float, float, float)
+    telemetry_update = pyqtSignal(float, float, float, float, float, float, float, float, float, float)
 
     def __init__(self):
         # Initializes the parent class (QObject)
@@ -33,9 +33,16 @@ class Worker(QObject):
                 flight_time = float(telemetry_data[0])
                 altitude = float(telemetry_data[1])
                 est_altitude = float(telemetry_data[2])
+                velocity = float(telemetry_data[3])
+                est_velocity = float(telemetry_data[4])
+                est_angle = float(telemetry_data[5])
+                latitude = float(telemetry_data[6])
+                longitude = float(telemetry_data[7])
+                est_altitude = float(telemetry_data[8])
+                est_longitude = float(telemetry_data[9])
                 
                 # Emite the signal with data
-                self.telemetry_update.emit(flight_time, altitude, est_altitude)
+                self.telemetry_update.emit(flight_time, altitude, est_altitude, velocity, est_velocity, est_angle, latitude, longitude, est_altitude, est_longitude)
             except (ValueError, IndexError):
                 # If data is bad ignore
                 pass
@@ -55,11 +62,25 @@ if __name__ == "__main__":
     time_label = QLabel("Time: --")
     altitude_label = QLabel("Altitude: --")
     est_alt_label = QLabel("Est. Altitude: --")
+    velocity_label = QLabel("Velocity: --")
+    est_velocity_label = QLabel("Est. Velocity: --")
+    est_angle_label = QLabel("Est. Angle: --")
+    latitude_label = QLabel("Latitude: --")
+    longitude_label = QLabel("Longitude: --")
+    est_lat_label = QLabel("Est. Latitude: --")
+    est_long_label = QLabel("Est. Longitude: --")
 
     # Add each label to layout
     layout.addWidget(time_label) 
     layout.addWidget(altitude_label)
     layout.addWidget(est_alt_label)
+    layout.addWidget(velocity_label)
+    layout.addWidget(est_velocity_label)
+    layout.addWidget(est_angle_label)
+    layout.addWidget(latitude_label)
+    layout.addWidget(longitude_label)
+    layout.addWidget(est_lat_label)
+    layout.addWidget(est_long_label)
 
     # Create plot widget for graph
     plot_widget = pg.PlotWidget()
@@ -70,7 +91,7 @@ if __name__ == "__main__":
     plot_widget.showGrid(x=True, y=True)
 
     # The line that will update on graph
-    trajectory_line = plot_widget.plot(pen=pg.mkPen('b', width=3))
+    trajectory_line = plot_widget.plot(pen=pg.mkPen('r', width=3))
 
     layout.addWidget(plot_widget) # Add plot to layout
 
@@ -82,10 +103,17 @@ if __name__ == "__main__":
     altitude_data = []
 
 
-    def update_telemetry(time, alt, est_alt, time_label, altitude_label, est_alt_label):
+    def update_telemetry(time, alt, est_alt, vel, est_vel, est_angle, lat, longit, est_lat, est_long, time_label, altitude_label, est_alt_label, velocity_label, est_velocity_label, est_angle_label, latitude_label, longitude_label, est_lat_label, est_long_label):
         time_label.setText(f"Time: {time:.2f} s")
         altitude_label.setText(f"Altitude: {alt:.2f} m")
         est_alt_label.setText(f"Est. Altitude: {est_alt:.2f} m")
+        velocity_label.setText(f"Velocity: {vel:.2f}")
+        est_velocity_label.setText(f"Est. Velocity: {est_vel:.2f}")
+        est_angle_label.setText(f"Est. Angle: {est_angle:.2f}")
+        latitude_label.setText(f"Latitude: {lat:.2f}")
+        longitude_label.setText(f"Longitude: {longit:.2f}")
+        est_lat_label.setText(f"Est. Latitude: {est_lat:.2f}")
+        est_long_label.setText(f"Est. Longitude: {est_long:.2f}")
 
         # Update graph data
         time_data.append(time)
@@ -102,7 +130,7 @@ if __name__ == "__main__":
     # Start workers run() method when the thread starts
     thread.started.connect(worker.run)
     #Conncect worker's signal to slot function
-    worker.telemetry_update.connect(lambda t, a, e: update_telemetry(t, a, e, time_label, altitude_label, est_alt_label))
+    worker.telemetry_update.connect(lambda time, alt, est_alt, vel, est_vel, est_angle, lat, longit, est_lat, est_long: update_telemetry(time, alt, est_alt, vel, est_vel, est_angle, lat, longit, est_lat, est_long, time_label, altitude_label, est_alt_label, velocity_label, est_velocity_label, est_angle_label, latitude_label, longitude_label, est_lat_label, est_long_label))
     # Start the thread
     thread.start()
 
