@@ -1,0 +1,2 @@
+/usr/bin/ar qc libsimulation_engine.a CMakeFiles/simulation_engine.dir/flight_computer.cpp.o CMakeFiles/simulation_engine.dir/physics_engine.cpp.o CMakeFiles/simulation_engine.dir/sensors.cpp.o
+/usr/bin/ranlib libsimulation_engine.a
