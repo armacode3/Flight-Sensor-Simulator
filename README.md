@@ -34,3 +34,25 @@ A real-time rocket flight simulation suite designed to model sensor noise, test 
 
 ```bash
 pip install PyQt5 pyqtgraph pandas matplotlib
+```
+
+## Build & Run
+1. **Build Simulation**
+```bash
+mkdir build
+cd build
+cmake ..
+make
+```
+2. **Start the GUI**
+```bash
+python3 scripts/data_gui.py
+```
+3. **Run Simulator**
+```bash
+./src/simulator
+```
+4. **Analyze Data**
+```bash
+python3 scripts/plot_data.py build/output.csv
+```
