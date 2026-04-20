@@ -1,8 +1,0 @@
-/home/zavaarma/workspace/github.com/Flight-Sensor-Simulator/build/CMakeFiles/edit_cache.dir
-/home/zavaarma/workspace/github.com/Flight-Sensor-Simulator/build/CMakeFiles/rebuild_cache.dir
-/home/zavaarma/workspace/github.com/Flight-Sensor-Simulator/build/simulation/CMakeFiles/simulation_engine.dir
-/home/zavaarma/workspace/github.com/Flight-Sensor-Simulator/build/simulation/CMakeFiles/edit_cache.dir
-/home/zavaarma/workspace/github.com/Flight-Sensor-Simulator/build/simulation/CMakeFiles/rebuild_cache.dir
-/home/zavaarma/workspace/github.com/Flight-Sensor-Simulator/build/src/CMakeFiles/simulator.dir
-/home/zavaarma/workspace/github.com/Flight-Sensor-Simulator/build/src/CMakeFiles/edit_cache.dir
-/home/zavaarma/workspace/github.com/Flight-Sensor-Simulator/build/src/CMakeFiles/rebuild_cache.dir

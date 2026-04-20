@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/simulator.dir/flightsim.cpp.o -o simulator  ../simulation/libsimulation_engine.a 
